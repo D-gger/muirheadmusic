@@ -6,8 +6,8 @@
   <title>Music</title>
   <!-- AthwinUI Framework CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/D-gger/athwinui@main/athwin.css">
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide Icons UMD Bundle CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
     /* View management */
     .page-view {
@@ -227,11 +227,31 @@
 
   <!-- JavaScript logic -->
   <script>
-    // Initialize Lucide icons
+    // Helper to render/re-render Lucide icons safely
+    function renderIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-      lucide.createIcons();
+      renderIcons();
       initTheme();
+      setupAudioListeners('m1');
+      setupAudioListeners('m2');
     });
+
+    // View Navigation Logic
+    function switchPage(page) {
+      document.querySelectorAll('.page-view').forEach(view => {
+        view.classList.remove('is-active');
+      });
+      const targetView = document.getElementById(`view-${page}`);
+      if (targetView) {
+        targetView.classList.add('is-active');
+      }
+      renderIcons();
+    }
 
     // Theme Switcher Logic
     function initTheme() {
@@ -256,6 +276,138 @@
           btn.innerHTML = `<i data-lucide="${iconName}" class="icon-inline"></i>`;
         }
       });
-      lucide.createIcons();
+      renderIcons();
     }
-<!-- ... existing code -->
+
+    // Custom Audio Player Functions
+    function setupAudioListeners(id) {
+      const audio = document.getElementById(id);
+      const seek = document.getElementById(`seek-${id}`);
+      const timeDisplay = document.getElementById(`time-${id}`);
+      const durDisplay = document.getElementById(`dur-${id}`);
+
+      if (!audio) return;
+
+      audio.addEventListener('loadedmetadata', () => {
+        if (durDisplay) durDisplay.textContent = formatTime(audio.duration);
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) {
+          const progress = (audio.currentTime / audio.duration) * 100;
+          if (seek) seek.value = progress;
+          if (timeDisplay) timeDisplay.textContent = formatTime(audio.currentTime);
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        updatePlayButtonState(id, false);
+      });
+    }
+
+    function togglePlay(id) {
+      const audio = document.getElementById(id);
+      if (!audio) return;
+
+      // Pause other playing audio elements
+      ['m1', 'm2'].forEach(otherId => {
+        if (otherId !== id) {
+          const otherAudio = document.getElementById(otherId);
+          if (otherAudio && !otherAudio.paused) {
+            otherAudio.pause();
+            updatePlayButtonState(otherId, false);
+          }
+        }
+      });
+
+      if (audio.paused) {
+        audio.play().then(() => {
+          updatePlayButtonState(id, true);
+        }).catch(e => {
+          console.log("Audio playback error:", e);
+        });
+      } else {
+        audio.pause();
+        updatePlayButtonState(id, false);
+      }
+    }
+
+    function stopAudio(id) {
+      const audio = document.getElementById(id);
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
+      updatePlayButtonState(id, false);
+    }
+
+    function updatePlayButtonState(id, isPlaying) {
+      const btn = document.getElementById(`playbtn-${id}`);
+      if (!btn) return;
+      if (isPlaying) {
+        btn.innerHTML = `<i data-lucide="pause" class="icon-inline"></i> Pause`;
+      } else {
+        btn.innerHTML = `<i data-lucide="play" class="icon-inline"></i> Play`;
+      }
+      renderIcons();
+    }
+
+    function seekAudio(id) {
+      const audio = document.getElementById(id);
+      const seek = document.getElementById(`seek-${id}`);
+      if (audio && seek && audio.duration) {
+        audio.currentTime = (seek.value / 100) * audio.duration;
+      }
+    }
+
+    function changeVolume(id) {
+      const audio = document.getElementById(id);
+      const volSlider = document.getElementById(`vol-${id}`);
+      const volTxt = document.getElementById(`voltxt-${id}`);
+      const muteBtn = document.getElementById(`mutebtn-${id}`);
+
+      if (!audio || !volSlider) return;
+
+      const val = parseFloat(volSlider.value);
+      audio.volume = val;
+      audio.muted = (val === 0);
+
+      if (volTxt) {
+        volTxt.textContent = `${Math.round(val * 100)}%`;
+      }
+
+      if (muteBtn) {
+        const icon = val === 0 ? 'volume-x' : 'volume-2';
+        muteBtn.innerHTML = `<i data-lucide="${icon}" class="icon-inline"></i>`;
+        renderIcons();
+      }
+    }
+
+    function toggleMute(id) {
+      const audio = document.getElementById(id);
+      const volSlider = document.getElementById(`vol-${id}`);
+      const muteBtn = document.getElementById(`mutebtn-${id}`);
+
+      if (!audio) return;
+
+      audio.muted = !audio.muted;
+      if (muteBtn) {
+        const icon = (audio.muted || audio.volume === 0) ? 'volume-x' : 'volume-2';
+        muteBtn.innerHTML = `<i data-lucide="${icon}" class="icon-inline"></i>`;
+        renderIcons();
+      }
+      if (volSlider && audio.muted) {
+        document.getElementById(`voltxt-${id}`).textContent = '0%';
+      } else if (volSlider) {
+        document.getElementById(`voltxt-${id}`).textContent = `${Math.round(audio.volume * 100)}%`;
+      }
+    }
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+  </script>
+</body>
+</html>
