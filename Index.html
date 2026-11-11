@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music</title>
+  <!-- AthwinUI Framework CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/D-gger/athwinui@main/athwin.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* View management */
+    .page-view {
+      display: none;
+    }
+    .page-view.is-active {
+      display: block;
+    }
+    /* Standard audio element hidden for custom player UI replacement */
+    audio.custom-audio-native {
+      display: none;
+    }
+    .icon-inline {
+      vertical-align: middle;
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    /* Island footer styling */
+    .footer-island {
+      margin-top: 3rem;
+      margin-bottom: 2rem;
+      padding: 0.85rem 1.5rem;
+      background: var(--aw-surface-2, #f1f5f9);
+      border: 1px solid var(--aw-border, #e2e8f0);
+      border-radius: var(--aw-radius-lg, 1rem);
+      box-shadow: var(--aw-shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+      width: fit-content;
+    }
+    /* Top toolbar for utility controls */
+    .top-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== INDEX PAGE VIEW ==================== -->
+  <div id="view-index" class="page-view is-active">
+    <main class="aw-container aw-section">
+      <!-- Top Utilities Bar -->
+      <div class="top-toolbar">
+        <button class="aw-btn aw-btn-outline aw-btn-sm" id="theme-toggle-index" onclick="toggleTheme()" title="Toggle Theme">
+          <i data-lucide="moon" class="icon-inline"></i>
+        </button>
+      </div>
+
+      <div class="aw-stack" style="--aw-gap: 2rem; align-items: center; text-align: center;">
+        <header>
+          <h1 class="aw-h1">Music</h1>
+        </header>
+
+        <div class="aw-cluster">
+          <a href="javascript:void(0)" onclick="switchPage('music')" style="text-decoration: none;">
+            <button class="aw-btn aw-btn-primary aw-btn-lg">
+              <i data-lucide="music" class="icon-inline"></i> Go To Music Page
+            </button>
+          </a>
+          <a href="./legacy" style="text-decoration: none;">
+            <button class="aw-btn aw-btn-outline aw-btn-lg">
+              <i data-lucide="archive" class="icon-inline"></i> Legacy
+            </button>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <div class="footer footer-island aw-mx-auto aw-center aw-muted aw-small">
+      <p style="margin: 0;"><strong>&copy;</strong> (COPYRIGHT 2024-2026 D-gger)</p>
+    </div>
+  </div>
+
+  <!-- ==================== MUSIC PAGE VIEW ==================== -->
+  <div id="view-music" class="page-view">
+    <main class="aw-container aw-section">
+      <!-- Top Utilities Bar -->
+      <div class="top-toolbar">
+        <button class="aw-btn aw-btn-outline aw-btn-sm" id="theme-toggle-music" onclick="toggleTheme()" title="Toggle Theme">
+          <i data-lucide="moon" class="icon-inline"></i>
+        </button>
+      </div>
+
+      <div class="aw-stack" style="--aw-gap: 1.5rem;">
+        
+        <!-- Header -->
+        <header style="text-align: center;">
+          <h1 class="aw-h1">Music Page</h1>
+        </header>
+
+        <div class="div2 aw-between aw-items-center">
+          <a href="javascript:void(0)" onclick="switchPage('index')" style="text-decoration: none;">
+            <button class="aw-btn aw-btn-outline button2">
+              <i data-lucide="arrow-left" class="icon-inline"></i> Go Back
+            </button>
+          </a>            
+          <a href="./legacy" style="text-decoration: none;">
+            <button class="aw-btn aw-btn-outline button-legacy">
+              <i data-lucide="archive" class="icon-inline"></i> Legacy
+            </button>
+          </a>
+        </div>
+
+        <!-- Track 1 Container (.div3) -->
+        <div class="div3 aw-card aw-card-hover">
+          <div class="aw-card-header">
+            <p id="mp" class="aw-h3" style="margin: 0;">
+              <strong>Running Through The Hills</strong>
+            </p>
+            <span class="aw-badge aw-badge-primary">Track 01</span>
+          </div>
+          
+          <!-- Native Audio Element -->
+          <audio class="custom-audio-native" id="m1" title="Running Through The Hills" preload="metadata">
+            <source src="m1.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+
+          <!-- Custom Player Controls -->
+          <div class="aw-stack" style="--aw-gap: 1rem; padding-top: 0.5rem;">
+            <!-- Track Seek Bar -->
+            <div class="aw-stack" style="--aw-gap: 0.25rem;">
+              <input type="range" class="aw-range" id="seek-m1" value="0" min="0" max="100" oninput="seekAudio('m1')">
+              <div class="aw-between aw-small aw-muted">
+                <span id="time-m1">0:00</span>
+                <span id="dur-m1">0:00</span>
+              </div>
+            </div>
+
+            <!-- Play & Volume Control Toolbar -->
+            <div class="aw-between aw-items-center aw-flex-wrap" style="gap: 1rem;">
+              <div class="aw-cluster">
+                <button class="aw-btn aw-btn-primary" id="playbtn-m1" onclick="togglePlay('m1')">
+                  <i data-lucide="play" class="icon-inline"></i> Play
+                </button>
+                <button class="aw-btn aw-btn-ghost" onclick="stopAudio('m1')">
+                  <i data-lucide="square" class="icon-inline"></i> Stop
+                </button>
+              </div>
+
+              <!-- Volume Control Slider -->
+              <div class="aw-cluster aw-items-center">
+                <button class="aw-btn aw-btn-ghost aw-btn-sm" id="mutebtn-m1" onclick="toggleMute('m1')">
+                  <i data-lucide="volume-2" class="icon-inline"></i>
+                </button>
+                <label class="aw-field" style="margin: 0; width: 120px;">
+                  <input type="range" class="aw-range" id="vol-m1" min="0" max="1" step="0.05" value="1" oninput="changeVolume('m1')">
+                </label>
+                <span class="aw-small aw-muted" id="voltxt-m1" style="width: 35px; text-align: right;">100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr noshade style="border: 0; border-top: 1px dashed var(--aw-border, #cbd5e1); margin: 0.5rem 0;">
+
+        <!-- Track 2 Container (.div4) -->
+        <div class="div4 aw-card aw-card-hover">
+          <div class="aw-card-header">
+            <p id="mp" class="aw-h3" style="margin: 0;">
+              <strong>Escaping The Monster</strong>
+            </p>
+            <span class="aw-badge aw-badge-primary">Track 02</span>
+          </div>
+          
+          <!-- Native Audio Element -->
+          <audio class="custom-audio-native" id="m2" title="Escaping The Monster" preload="metadata">
+            <source src="m2.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+
+          <!-- Custom Player Controls -->
+          <div class="aw-stack" style="--aw-gap: 1rem; padding-top: 0.5rem;">
+            <!-- Track Seek Bar -->
+            <div class="aw-stack" style="--aw-gap: 0.25rem;">
+              <input type="range" class="aw-range" id="seek-m2" value="0" min="0" max="100" oninput="seekAudio('m2')">
+              <div class="aw-between aw-small aw-muted">
+                <span id="time-m2">0:00</span>
+                <span id="dur-m2">0:00</span>
+              </div>
+            </div>
+
+            <!-- Play & Volume Control Toolbar -->
+            <div class="aw-between aw-items-center aw-flex-wrap" style="gap: 1rem;">
+              <div class="aw-cluster">
+                <button class="aw-btn aw-btn-primary" id="playbtn-m2" onclick="togglePlay('m2')">
+                  <i data-lucide="play" class="icon-inline"></i> Play
+                </button>
+                <button class="aw-btn aw-btn-ghost" onclick="stopAudio('m2')">
+                  <i data-lucide="square" class="icon-inline"></i> Stop
+                </button>
+              </div>
+
+              <!-- Volume Control Slider -->
+              <div class="aw-cluster aw-items-center">
+                <button class="aw-btn aw-btn-ghost aw-btn-sm" id="mutebtn-m2" onclick="toggleMute('m2')">
+                  <i data-lucide="volume-2" class="icon-inline"></i>
+                </button>
+                <label class="aw-field" style="margin: 0; width: 120px;">
+                  <input type="range" class="aw-range" id="vol-m2" min="0" max="1" step="0.05" value="1" oninput="changeVolume('m2')">
+                </label>
+                <span class="aw-small aw-muted" id="voltxt-m2" style="width: 35px; text-align: right;">100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <div class="footer footer-island aw-mx-auto aw-center aw-muted aw-small">
+      <strong>&copy;</strong> (COPYRIGHT 2024-2026 D-gger)
+    </div>
+  </div>
+
+  <!-- JavaScript logic -->
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      initTheme();
+    });
+
+    // Theme Switcher Logic
+    function initTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-aw-theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(currentTheme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-aw-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-aw-theme', theme);
+      const iconName = theme === 'dark' ? 'sun' : 'moon';
+      
+      ['theme-toggle-index', 'theme-toggle-music'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.innerHTML = `<i data-lucide="${iconName}" class="icon-inline"></i>`;
+        }
+      });
+      lucide.createIcons();
+    }
+<!-- ... existing code -->
